@@ -36,6 +36,7 @@ Usage:
 """
 import os
 import asyncio
+import sys
 from dotenv import load_dotenv
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -57,7 +58,8 @@ from langchain_openai import ChatOpenAI
 
 # To this:
 #model = init_chat_model("openai:gpt-4o-mini").bind(parallel_tool_calls=False)
-model = ChatOpenAI(model="gpt-5.5", parallel_tool_calls=False)
+# model = ChatOpenAI(model="gpt-5.5", parallel_tool_calls=False)   # payant (OPENAI_API_KEY)
+model = init_chat_model("ollama:qwen2.5:7b", temperature=0)  # ✅ gratuit, local (Ollama)
 
 
 # ─────────────────────────────────────────────
@@ -117,7 +119,9 @@ async def main():
         {
             "math": {
                 # The MCP server to connect to
-                "command": "python",
+                # sys.executable = le même Python que cet agent (celui du venv),
+                # sinon "python" peut pointer vers un autre Python sans `mcp`
+                "command": sys.executable,
                 "args": [server_path],
                 "transport": "stdio",       # Local process (stdin/stdout)
             },

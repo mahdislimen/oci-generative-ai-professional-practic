@@ -38,8 +38,23 @@ load_dotenv()  # Loads variables like OPENAI_API_KEY into environment
 
 from langchain.chat_models import init_chat_model
 
-# "gpt-5.5" is the latest model
-model = init_chat_model("openai:gpt-5.5")
+# "gpt-5.5" is the latest model (payant, nécessite OPENAI_API_KEY)
+# model = init_chat_model("openai:gpt-5.5")
+
+# Version GRATUITE locale : modèle via Ollama (aucune clé API nécessaire)
+# Prérequis : Ollama lancé + `ollama pull llama3.2` + `pip install langchain-ollama`
+# model = init_chat_model("ollama:llama3.2", temperature=0)
+
+# Version GRATUITE cloud : Google Gemini (free tier)
+# Prérequis : GOOGLE_API_KEY dans .env + `pip install langchain-google-genai`
+# (gemini-3.8-flash est le plus récent, mais souvent surchargé en free tier → 503)
+# (pas de temperature : Gemini 3 utilise des paramètres d'échantillonnage fixes)
+# ⚠️ Free tier limité à 20 requêtes/jour/modèle
+# model = init_chat_model("google_genai:gemini-3.6-flash")
+
+# ✅ CHOIX ACTUEL — gratuit, local, illimité : Qwen 2.5 7B via Ollama
+# (bien meilleur que llama3.2 pour enchaîner plusieurs outils)
+model = init_chat_model("ollama:qwen2.5:7b", temperature=0)
 
 
 # -------------------------------------------------------
@@ -175,7 +190,9 @@ def run_agent(question: str):
         # 4. Final AI message = final response to user
         elif msg.type == "ai" and msg.content:
             print(f"{step}. Final answer:")
-            print(f"   {msg.content}")
+            # .text extrait le texte même quand le modèle renvoie une liste de
+            # blocs (cas de Gemini 3), au lieu d'une simple chaîne (cas d'OpenAI)
+            print(f"   {msg.text}")
             step += 1
 
     print("=" * 60)

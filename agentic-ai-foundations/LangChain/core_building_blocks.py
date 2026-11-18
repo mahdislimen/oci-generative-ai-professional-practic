@@ -47,7 +47,8 @@ print("OPENAI_API_KEY found:", bool(os.getenv("OPENAI_API_KEY")))
 
 from langchain.chat_models import init_chat_model
 
-model = init_chat_model("openai:gpt-5.5")
+# model = init_chat_model("openai:gpt-5.5")   # payant (OPENAI_API_KEY)
+model = init_chat_model("ollama:qwen2.5:7b", temperature=0)  # ✅ gratuit, local (Ollama)
 # model = init_chat_model("anthropic:claude-3-5-sonnet-latest")
 # model = init_chat_model("google_genai:gemini-2.0-flash")
 
@@ -107,7 +108,7 @@ from langchain_core.output_parsers import StrOutputParser
 chain = chat_template | model | StrOutputParser()
 
 # Run the whole pipeline with a single .invoke().
-result = chain.invoke({"concept": "for loops"})
+result = chain.invoke({"concept": "dictionaries"})
 print("=== Chain Output ===")
 print(result)
 print()
@@ -151,7 +152,7 @@ chain_with_memory = chat_with_memory | model | StrOutputParser()
 # Watch the model correctly recall the name "Alex" — that's "memory".
 result = chain_with_memory.invoke({
     "history": memory.messages,
-    "question": "What was my name again?"
+    "question": "What should I learn first"
 })
 print("=== Memory-Aware Response ===")
 print(result)

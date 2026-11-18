@@ -3,3 +3,11 @@
 demos/.DS_Store
 demos/.DS_Store
 demos/.DS_Store
+
+# Secrets et fichiers locaux (ne jamais pousser)
+.env
+.env.*
+!.env.example
+.history/
+.venv/
+__pycache__/
